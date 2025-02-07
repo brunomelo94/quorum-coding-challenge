@@ -4,43 +4,58 @@ import { loadData } from "../services/csvService.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  // Fetch/load data
-  console.log(await loadData())
-  const { bills, voteResults, votes, legislators } = await loadData({legislatorsFile: true, billsFile: true, votesFile: true, voteResultsFile: true});
+  try {
+    // Fetch/load data
+    const data = await loadData({
+      legislatorsFile: true,
+      billsFile: true,
+      votesFile: true,
+      voteResultsFile: true
+    });
 
-  // Reduce voteResults to a summary of legislators and their supported/opposed bills
-  const results = Object.keys(voteResults).reduce((acc, key) => {
-    let voteResult = voteResults[key];
-    let vote = voteResult?.vote_id ? votes[voteResult.vote_id] : null;
-    let bill = vote?.bill_id ? bills[vote.bill_id] : null;
-    let legislator = bill?.sponsor_id ? legislators[bill.sponsor_id] : null;
+    const { bills, voteResults, votes, legislators } = data;
 
-    // Initialize legislator object
-    if(legislator) {
-      if(!acc[legislator.id]) {
-        acc[legislator.id] = acc[legislator.id] ||
-          {
+    // Validate that all required data is loaded
+    if (!bills || !voteResults || !votes || !legislators) {
+      return res.status(500).json({ error: "Incomplete data loaded." });
+    }
+
+    // Reduce voteResults to a summary of legislators and their supported/opposed bills
+    const results = Object.keys(voteResults).reduce((acc, key) => {
+      const voteResult = voteResults[key];
+      const vote = voteResult?.vote_id ? votes[voteResult.vote_id] : null;
+      const bill = vote?.bill_id ? bills[vote.bill_id] : null;
+      const legislator = bill?.sponsor_id ? legislators[bill.sponsor_id] : null;
+
+      if (legislator) {
+        // Initialize legislator object if it doesn't exist
+        if (!acc[legislator.id]) {
+          acc[legislator.id] = {
             ID: legislator.id,
             Legislator: legislator.name,
             "Supported bills": 0,
             "Opposed bills": 0
           };
-      }
+        }
 
-      // Sum supported or opposed bill
-        let voteType = Number(voteResult.vote_type);
-        if(voteType === 1) {
+        // Sum supported or opposed bills based on vote type
+        const voteType = Number(voteResult.vote_type);
+        if (voteType === 1) {
           acc[legislator.id]["Supported bills"] += 1;
-        } else if(voteType === 2) {
+        } else if (voteType === 2) {
           acc[legislator.id]["Opposed bills"] += 1;
         }
-    }
-    
-    return acc;
-  }, {})
+      }
+      
+      return acc;
+    }, {});
 
-  res.json(results);
-  console.log(results);
+    res.json(results);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
 });
+
 
 export default router;

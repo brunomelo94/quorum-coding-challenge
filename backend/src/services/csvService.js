@@ -20,25 +20,36 @@ const loadCSV = async (filePath) => {
   });
 };
 
-// Load data from CSV files based on params
 export const loadData = async (params) => {
   try {
-    const result = {};
-    if(params.legislatorsFile) {
-        result.legislators = await loadCSV(LEGISLATORS_FILE);
-    }
-    if(params.billsFile) {
-        result.bills = await loadCSV(BILLS_FILE);
-    }
-    if(params.votesFile) {
-        result.votes = await loadCSV(VOTES_FILE);
-    }
-    if(params.voteResultsFile) {
-        result.voteResults = await loadCSV(VOTE_RESULTS_FILE);
-    }
+    const fileMapping = {
+      legislatorsFile: { key: 'legislators', path: LEGISLATORS_FILE },
+      billsFile: { key: 'bills', path: BILLS_FILE },
+      votesFile: { key: 'votes', path: VOTES_FILE },
+      voteResultsFile: { key: 'voteResults', path: VOTE_RESULTS_FILE },
+    };
+
+    // Filter out only those keys enabled in params and map them to promises
+    const loadPromises = Object.keys(fileMapping)
+      .filter((paramKey) => params[paramKey])
+      .map((paramKey) => {
+        const { key, path } = fileMapping[paramKey];
+        return loadCSV(path).then((data) => ({ key, data }));
+      });
+
+    // Await all the promises concurrently
+    const loadedFiles = await Promise.all(loadPromises);
+
+    // Build the result object from the loaded files
+    const result = loadedFiles.reduce((acc, { key, data }) => {
+      acc[key] = data;
+      return acc;
+    }, {});
+
     return result;
   } catch (error) {
     console.error("Error loading data:", error);
     return {};
   }
 };
+

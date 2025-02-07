@@ -36,3 +36,27 @@ erDiagram
     LEGISLATORS ||--o{ VOTE_RESULTS : "casts"
 
 ```
+
+## Sequence diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebApp
+    participant Backend
+    participant Database
+
+    User->>WebApp: Request both summaries
+    par Legislator Voting Summary
+        WebApp->>Backend: Fetch legislator's votes
+        Backend->>Database: Query legislator votes
+        Database-->>Backend: Return voting results
+        Backend-->>WebApp: Send legislator voting summary
+    and Bill Voting Summary
+        WebApp->>Backend: Fetch bill votes
+        Backend->>Database: Query bill votes and sponsor
+        Database-->>Backend: Return bill voting details
+        Backend-->>WebApp: Send bill summary
+    end
+    WebApp-->>User: Display both summaries
+```
