@@ -99,16 +99,16 @@ function App() {
       <Header />
       <Container component="main" sx={{ flex: 1, py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h2" gutterBottom>
-            Bills
-          </Typography>
-          <BillsTable bills={state.bills} />
-        </Box>
-        <Box>
-          <Typography variant="h4" component="h2" gutterBottom>
-            Legislators
+          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', color: 'legislator.main' }}>
+            Legislators&apos; Support on Bills
           </Typography>
           <LegislatorsTable legislators={state.legislators} />
+        </Box>
+        <Box>
+          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', color: 'bill.main' }}>
+            List of Bills
+          </Typography>
+          <BillsTable bills={state.bills} />
         </Box>
       </Container>
       <Footer />

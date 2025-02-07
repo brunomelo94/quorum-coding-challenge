@@ -24,7 +24,7 @@ const LegislatorsTable = ({ legislators, columns }) => {
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="legislators table">
         <TableHead>
-        <TableRow sx={{ backgroundColor: '#23ab20' }}>
+        <TableRow sx={{ backgroundColor: 'legislator.main' }}>
             {tableColumns.map((col) => (
               <TableCell
                 key={col}

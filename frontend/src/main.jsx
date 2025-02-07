@@ -13,6 +13,12 @@ const theme = createTheme({
     secondary: {
       main: '#dc004e',
     },
+    legislator: {
+      main: '#23ab20'
+    },
+    bill: {
+      main: '#cc701f'
+    },
   },
 });
 

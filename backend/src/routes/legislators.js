@@ -8,24 +8,20 @@ router.get("/", async (req, res) => {
     // Fetch/load data
     const data = await loadData({
       legislatorsFile: true,
-      billsFile: true,
-      votesFile: true,
       voteResultsFile: true
     });
 
-    const { bills, voteResults, votes, legislators } = data;
+    const { voteResults, legislators } = data;
 
     // Validate that all required data is loaded
-    if (!bills || !voteResults || !votes || !legislators) {
+    if (!voteResults || !legislators) {
       return res.status(500).json({ error: "Incomplete data loaded." });
     }
 
     // Reduce voteResults to a summary of legislators and their supported/opposed bills
     const results = Object.keys(voteResults).reduce((acc, key) => {
       const voteResult = voteResults[key];
-      const vote = voteResult?.vote_id ? votes[voteResult.vote_id] : null;
-      const bill = vote?.bill_id ? bills[vote.bill_id] : null;
-      const legislator = bill?.sponsor_id ? legislators[bill.sponsor_id] : null;
+      const legislator = voteResult.legislator_id ? legislators[voteResult.legislator_id] : null;
 
       if (legislator) {
         // Initialize legislator object if it doesn't exist

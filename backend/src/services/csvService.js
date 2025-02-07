@@ -2,11 +2,14 @@ import fs from "fs";
 import path from "path";
 import csvParser from "csv-parser";
 
-const DATA_DIR = path.resolve("./src/data");
-const BILLS_FILE = path.join(DATA_DIR, "bills.csv");
-const LEGISLATORS_FILE = path.join(DATA_DIR, "legislators.csv");
-const VOTES_FILE = path.join(DATA_DIR, "votes.csv");
-const VOTE_RESULTS_FILE = path.join(DATA_DIR, "vote_results.csv");
+// Determine the correct data directory
+const isTesting = process.env.NODE_ENV === "test";
+const BASE_DIR = isTesting ? path.resolve(process.cwd(), "backend/src/data") : path.resolve("./src/data");
+
+const BILLS_FILE = path.join(BASE_DIR, "bills.csv");
+const LEGISLATORS_FILE = path.join(BASE_DIR, "legislators.csv");
+const VOTES_FILE = path.join(BASE_DIR, "votes.csv");
+const VOTE_RESULTS_FILE = path.join(BASE_DIR, "vote_results.csv");
 
 // Utility function to load CSV data
 const loadCSV = async (filePath) => {
@@ -14,7 +17,7 @@ const loadCSV = async (filePath) => {
     const results = {};
     fs.createReadStream(filePath)
       .pipe(csvParser())
-      .on("data", (data) => results[data.id] = data)
+      .on("data", (data) => (results[data.id] = data))
       .on("end", () => resolve(results))
       .on("error", (error) => reject(error));
   });
@@ -23,10 +26,10 @@ const loadCSV = async (filePath) => {
 export const loadData = async (params) => {
   try {
     const fileMapping = {
-      legislatorsFile: { key: 'legislators', path: LEGISLATORS_FILE },
-      billsFile: { key: 'bills', path: BILLS_FILE },
-      votesFile: { key: 'votes', path: VOTES_FILE },
-      voteResultsFile: { key: 'voteResults', path: VOTE_RESULTS_FILE },
+      legislatorsFile: { key: "legislators", path: LEGISLATORS_FILE },
+      billsFile: { key: "bills", path: BILLS_FILE },
+      votesFile: { key: "votes", path: VOTES_FILE },
+      voteResultsFile: { key: "voteResults", path: VOTE_RESULTS_FILE },
     };
 
     // Filter out only those keys enabled in params and map them to promises
@@ -48,8 +51,7 @@ export const loadData = async (params) => {
 
     return result;
   } catch (error) {
-    console.error("Error loading data:", error);
+    console.error("[CSV Service] Error loading data:", error);
     return {};
   }
 };
-

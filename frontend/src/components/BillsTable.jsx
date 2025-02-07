@@ -21,7 +21,7 @@ const BillsTable = ({ bills, columns }) => {
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="bills table">
         <TableHead>
-          <TableRow sx={{ backgroundColor: '#cc701f' }}>
+          <TableRow sx={{ backgroundColor: 'bill.main' }}>
             {tableColumns.map((col) => (
               <TableCell key={col} sx={{ fontWeight: 'bold', color: 'white' }}>
                 {col}
