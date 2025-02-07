@@ -1,9 +1,15 @@
 import { useReducer, useEffect } from 'react';
-import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BillsTable from './components/BillsTable';
 import LegislatorsTable from './components/LegislatorsTable';
+
+// MUI components
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
 const initialState = {
   bills: {},
@@ -63,29 +69,50 @@ function App() {
     fetchData();
   }, []);
 
+  // Display a full-screen loading indicator while fetching data.
   if (state.loading) {
-    return <div className="loading">Loading data...</div>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
+  // Display an error alert if data fetching fails.
   if (state.error) {
-    return <div className="error">Error: {state.error}</div>;
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">Error: {state.error}</Alert>
+      </Container>
+    );
   }
 
   return (
-    <div className="app-container">
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <main className="main-container">
-        <section className="table-section">
-          <h2>Bills</h2>
+      <Container component="main" sx={{ flex: 1, py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Bills
+          </Typography>
           <BillsTable bills={state.bills} />
-        </section>
-        <section className="table-section">
-          <h2>Legislators</h2>
+        </Box>
+        <Box>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Legislators
+          </Typography>
           <LegislatorsTable legislators={state.legislators} />
-        </section>
-      </main>
+        </Box>
+      </Container>
       <Footer />
-    </div>
+    </Box>
   );
 }
 
