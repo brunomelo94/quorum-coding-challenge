@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "concurrently": "^9.1.2",
     "vitest": "^3.0.5"
   },
   "name": "quorum-coding-challenge",
@@ -22,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/brunomelo94/quorum-coding-challenge/issues"
   },
-  "homepage": "https://github.com/brunomelo94/quorum-coding-challenge#readme"
+  "homepage": "https://github.com/brunomelo94/quorum-coding-challenge#readme",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
 }
